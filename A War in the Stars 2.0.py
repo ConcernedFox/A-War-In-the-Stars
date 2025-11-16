@@ -29,17 +29,10 @@ def draw_screen(R, L, A, B):
 
 R = pygame.Rect(100, 500, 39, 39)
 B = pygame.Rect(650, 500, 39, 39)
+Rshoot = pygame.USEREVENT + 1
+Bshoot = pygame.USEREVENT + 2
 RH = 10
 BH = 10
-def L_Move(key_pressed, Rect):
-    if key_pressed[pygame.K_UP] and Rect.y > 0:
-        Rect.y -= 10
-    elif key_pressed[pygame.K_DOWN] and Rect.y < 600:
-        Rect.y += 10
-    elif key_pressed[pygame.K_LEFT] and Rect.x > 500:
-        Rect.x -= 10
-    elif key_pressed[pygame.K_RIGHT] and Rect.x < 800:
-        Rect.x += 10
 
 def R_Move(key_pressed, Rect):
     if key_pressed[pygame.K_w] and Rect.y > 0:
@@ -51,10 +44,25 @@ def R_Move(key_pressed, Rect):
     elif key_pressed[pygame.K_d] and Rect.x < 300:
         Rect.x += 10
 
+def L_Move(key_pressed, Rect):
+    if key_pressed[pygame.K_UP] and Rect.y > 0:
+        Rect.y -= 10
+    elif key_pressed[pygame.K_DOWN] and Rect.y < 600:
+        Rect.y += 10
+    elif key_pressed[pygame.K_LEFT] and Rect.x > 500:
+        Rect.x -= 10
+    elif key_pressed[pygame.K_RIGHT] and Rect.x < 800:
+        Rect.x += 10
+
 R_BULLETS = []
 L_BULLETS = []
 Max_Bullets = 6 
 
+def R_and_B(R, B, R_BULLETS, L_BULLETS):
+    for r in R_BULLETS:
+        r.x += 10
+    for l in L_BULLETS:
+        l.x -= 10
 
 while True:
     for p in pygame.event.get():
@@ -67,11 +75,11 @@ while True:
                     R_BULLETS.append(A)
             if p.key == pygame.K_m:
                 if len(L_BULLETS) < Max_Bullets:
-                    B = pygame.Rect(B.x, B.y + 20, 10, 5)
-                    L_BULLETS.append(B)
-                    print(len(L_BULLETS))
+                    D = pygame.Rect(B.x, B.y + 20, 10, 5)
+                    L_BULLETS.append(D)
     K = pygame.key.get_pressed()
     R_Move(K, R)
     L_Move(K, B)
     draw_screen(R, B, R_BULLETS, L_BULLETS)
+    R_and_B(R, B, R_BULLETS, L_BULLETS)
     pygame.display.update()
