@@ -14,7 +14,7 @@ S = pygame.transform.scale(S, (WIDTH, HEIGHT))
 pygame.font.init()
 health_font = pygame.font.SysFont("Comic Sans MS", 36)
 
-def draw_screen(R, L, A, B):
+def draw_screen(R, L, A, B, AA, AB):
     Screen.blit(S, (0,0))
     Screen.blit(C, (R.x, R.y))
     Screen.blit(D, (L.x, L.y))
@@ -24,9 +24,9 @@ def draw_screen(R, L, A, B):
         pygame.draw.rect(Screen, "blue", Le)
     rectangle = pygame.Rect(390, 0, 20, 600)
     pygame.draw.rect(Screen, "black", rectangle)
-    A_health = health_font.render("Health: 10", 1, "black")
+    A_health = health_font.render("Health: " + str(AA), 1, "black")
     Screen.blit(A_health, (60,60))
-    B_health = health_font.render("Health: 10", 1, "black")
+    B_health = health_font.render("Health: " + str(AB), 1, "black")
     Screen.blit(B_health, (550,60))
 
 R = pygame.Rect(100, 500, 39, 39)
@@ -62,8 +62,17 @@ Max_Bullets = 6
 def R_and_B(R, B, R_BULLETS, L_BULLETS):
     for r in R_BULLETS:
         r.x += 10
+        if r.colliderect(B):
+            pygame.event.post(pygame.event.Event(Rshoot))
+            R_BULLETS.remove(r)
     for l in L_BULLETS:
         l.x -= 10
+        if l.colliderect(R):
+            pygame.event.post(pygame.event.Event(Bshoot))
+            L_BULLETS.remove(l)
+
+AA = 10
+AB = 10
 
 while True:
     for p in pygame.event.get():
@@ -78,9 +87,28 @@ while True:
                 if len(L_BULLETS) < Max_Bullets:
                     G = pygame.Rect(B.x, B.y + 20, 10, 5)
                     L_BULLETS.append(G)
+        if p.type == Rshoot:
+            AB -= 2
+            print(AB)
+        elif p.type == Bshoot:
+            AA -= 2
+            print(AA)
+    WINNER = ""
+    if AA == 0:
+        AC = health_font.render("WINNER = BLUE SPACESHIP!!!", 1, "black")
+        Screen.blit(AC, (400,400))
+        pygame.display.update()
+        pygame.time.delay(5000)
+        break
+    elif AB == 0:
+        AD = health_font.render("WINNER = RED SPACESHIP!!!", 1, "black")
+        Screen.blit(AD, (400,400))
+        pygame.display.update()
+        pygame.time.delay(5000)
+        break
     K = pygame.key.get_pressed()
     R_move(K, R)
     L_move(K, B)
-    draw_screen(R, B, R_BULLETS, L_BULLETS)
+    draw_screen(R, B, R_BULLETS, L_BULLETS, AA, AB)
     R_and_B(R, B, R_BULLETS, L_BULLETS)
     pygame.display.update()
